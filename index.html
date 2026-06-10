@@ -1,0 +1,1265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>xFUTURE — Wear your intent. Shape your future.</title>
+  <meta name="description" content="xFuture is more than clothing. It's a statement of intent. The intent to grow, to stay disciplined, to act with awareness." />
+  <meta name="theme-color" content="#000000" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Audiowide&family=Bebas+Neue&family=Bungee+Shade&family=Inter:wght@300;400;500;600;700;800;900&family=Monoton&family=Noto+Sans+JP:wght@300;400;500;700&family=Permanent+Marker&family=Rubik+Spray+Paint&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.0.42/bundled/lenis.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink:   '#000000',
+            shade: '#0A0A0A',
+            paper: '#FFFFFF',
+            dim:   '#7A7A7A',
+            faint: '#3A3A3A',
+            rule:  '#1A1A1A',
+            blood: '#E63946',
+          },
+          fontFamily: {
+            sans:    ['Inter', 'system-ui', 'sans-serif'],
+            display: ['"Archivo Black"', 'Inter', 'sans-serif'],
+            jp:      ['"Noto Sans JP"', 'sans-serif'],
+            spray:   ['"Rubik Spray Paint"', 'sans-serif'],
+            marker:  ['"Permanent Marker"', 'cursive'],
+          },
+          letterSpacing: {
+            tightest: '-0.06em',
+            tighter2: '-0.045em',
+          },
+        }
+      }
+    };
+  </script>
+
+  <style>
+    * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; box-sizing: border-box; }
+    html, body { background: #000; color: #fff; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
+    ::selection { background: #fff; color: #000; }
+
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+
+    /* type */
+    .display { font-family: "Inter", sans-serif; font-weight: 600; letter-spacing: -0.045em; line-height: 0.86; text-transform: uppercase; }
+    .label { font-family: "Inter", sans-serif; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; font-size: 0.72rem; }
+    .jp { font-family: "Noto Sans JP", sans-serif; }
+    .marker { font-family: "Permanent Marker", cursive; }
+    .spray { font-family: "Rubik Spray Paint", sans-serif; }
+
+    /* non-breaking word containers for split text */
+    .word-wrap { display: inline-block; white-space: nowrap; vertical-align: top; }
+    .split-char {
+      display: inline-block; vertical-align: top;
+      line-height: 1.18; padding-bottom: 0.18em;
+      -webkit-clip-path: inset(0 -0.3em 0 -0.3em);
+              clip-path: inset(0 -0.3em 0 -0.3em);
+    }
+    .split-char > span { display: inline-block; transform: translateY(115%); will-change: transform; }
+
+    .reveal-y { opacity: 0; transform: translateY(28px); will-change: transform, opacity; }
+    .mask-up { clip-path: inset(100% 0 0 0); will-change: clip-path; }
+
+    /* hover underline */
+    .ul-hover {
+      background-image: linear-gradient(currentColor, currentColor);
+      background-position: 0 100%; background-repeat: no-repeat; background-size: 0% 1px;
+      transition: background-size .55s cubic-bezier(.16,.84,.34,1); padding-bottom: 3px;
+    }
+    .ul-hover:hover { background-size: 100% 1px; }
+
+    /* grid noise overlay (very subtle, static) */
+    .grain::before {
+      content:""; position: fixed; inset: 0; z-index: 50; pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.4 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      opacity: 0.04;
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
+
+    /* progress bar */
+    .progress { position: fixed; top: 0; left: 0; right: 0; height: 1px; z-index: 70; background: rgba(255,255,255,0.06); }
+    .progress > div { height: 100%; width: 0%; background: #fff; transition: width 80ms linear; }
+
+    /* scroll cue */
+    .scroll-cue {
+      position: absolute; left: 50%; bottom: 2.4rem; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+      pointer-events: none; z-index: 3;
+    }
+    .scroll-cue .line {
+      width: 1px; height: 40px; background: rgba(255,255,255,0.4);
+      transform-origin: top; animation: cueLine 2.4s ease-in-out infinite;
+    }
+    @keyframes cueLine {
+      0%   { transform: scaleY(0); transform-origin: top; }
+      50%  { transform: scaleY(1); transform-origin: top; }
+      51%  { transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* product card */
+    .product {
+      aspect-ratio: 3/4; position: relative; overflow: hidden;
+      background: #0E0E0E;
+      transition: transform .6s cubic-bezier(.16,.84,.34,1);
+    }
+    .product:hover { transform: translateY(-6px); }
+    .product:hover .product-img { transform: scale(1.04); }
+    .product-img { position: absolute; inset: 0; transition: transform 1.2s cubic-bezier(.16,.84,.34,1); }
+
+    /* graffiti hero text */
+    .spray-text {
+      font-family: "Rubik Spray Paint", sans-serif;
+      letter-spacing: -0.04em;
+      transform: rotate(-2deg);
+      display: inline-block;
+    }
+
+    /* intent rows — vertical manifest layout */
+    .intent-row {
+      transition: padding-left .55s cubic-bezier(.16,.84,.34,1), background-color .4s;
+    }
+    .intent-row:hover { padding-left: 1.5rem; background-color: rgba(255,255,255,0.015); }
+    .intent-row .intent-verb {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: clamp(3.2rem, 9.4vw, 9.5rem);
+      letter-spacing: 0.005em;
+      line-height: 0.95;
+      display: inline-block;
+      transition: letter-spacing .55s cubic-bezier(.16,.84,.34,1);
+    }
+    .intent-row:hover .intent-verb { letter-spacing: 0.02em; }
+    .intent-row:hover .intent-num { color: #fff; }
+    .intent-num { transition: color .35s; font-variant-numeric: tabular-nums; }
+    .intent-arrow {
+      opacity: 0;
+      transform: translateX(-12px);
+      transition: opacity .5s, transform .55s cubic-bezier(.16,.84,.34,1), color .35s;
+    }
+    .intent-row:hover .intent-arrow { opacity: 1; transform: translateX(0); color: #fff; }
+    /* animated underline that shoots across the row on hover */
+    .intent-line {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+      background: #fff; transform: scaleX(0); transform-origin: left center;
+      transition: transform .7s cubic-bezier(.16,.84,.34,1);
+      z-index: 1;
+    }
+    .intent-row:hover .intent-line { transform: scaleX(1); }
+
+    /* the equation section */
+    .eq-line { perspective: 800px; }
+    .eq-word {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: clamp(2.6rem, 8.4vw, 8.4rem);
+      line-height: 0.92;
+      letter-spacing: 0.006em;
+      color: rgba(255,255,255,0.92);
+      display: inline-block;
+      transition: color .35s ease, transform .55s cubic-bezier(.16,.84,.34,1), letter-spacing .55s;
+      cursor: default;
+    }
+    .eq-word:hover {
+      color: #fff;
+      transform: translateY(-6px);
+      letter-spacing: 0.02em;
+    }
+    /* when any sibling is hovered, dim the others (kept simple via group hover via JS) */
+    .eq-line.hover-active .eq-word:not(:hover) { color: rgba(255,255,255,0.28); }
+    .eq-op {
+      font-family: "Inter", sans-serif;
+      font-weight: 300;
+      font-size: clamp(1.4rem, 4vw, 4rem);
+      color: rgba(255,255,255,0.32);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+    .eq-equals { color: rgba(255,255,255,0.55); font-weight: 400; }
+    .eq-result {
+      font-family: "Inter", sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.6rem, 8.4vw, 8.4rem);
+      letter-spacing: -0.04em;
+      line-height: 0.92;
+      color: #fff;
+      display: inline-block;
+      text-transform: uppercase;
+    }
+    .eq-rule {
+      width: 0; height: 1px; background: rgba(255,255,255,0.35);
+      max-width: 720px;
+      transition: width 1.4s cubic-bezier(.16,.84,.34,1);
+    }
+    .eq-rule.in { width: 100%; }
+
+    /* font morph section */
+    .morph-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 0 1.5rem; }
+    .morph-lockup {
+      position: absolute;
+      display: inline-flex; align-items: baseline;
+      font-size: clamp(3.5rem, 14vw, 16rem);
+      letter-spacing: -0.02em; line-height: 1;
+      text-transform: uppercase;
+      white-space: nowrap;
+      will-change: opacity, transform;
+    }
+    .morph-lockup .x { font-size: 0.36em; vertical-align: baseline; margin-right: 0.02em; opacity: 0.95; text-transform: lowercase; letter-spacing: 0; }
+    .morph-lockup.archivo  { font-family: "Inter", sans-serif; font-weight: 600; letter-spacing: -0.045em; }
+    .morph-lockup.bebas    { font-family: "Bebas Neue", sans-serif; font-size: clamp(4.5rem, 17vw, 19rem); letter-spacing: 0; }
+    .morph-lockup.audio    { font-family: "Audiowide", sans-serif; font-size: clamp(3rem, 12vw, 13rem); letter-spacing: -0.01em; }
+    .morph-lockup.monoton  { font-family: "Monoton", sans-serif; font-size: clamp(4rem, 15vw, 16rem); letter-spacing: 0; }
+    .morph-lockup.bungee   { font-family: "Bungee Shade", sans-serif; font-size: clamp(3rem, 11vw, 12rem); letter-spacing: 0.01em; }
+    .morph-lockup.spray    { font-family: "Rubik Spray Paint", sans-serif; font-size: clamp(3.5rem, 13vw, 15rem); letter-spacing: -0.02em; }
+
+    /* morph progress dots */
+    .morph-dots { display: flex; gap: 0.8rem; align-items: center; }
+    .morph-dot {
+      width: 36px; height: 1px; background: rgba(255,255,255,0.25);
+      transition: background .35s, height .35s;
+    }
+    .morph-dot.active { background: #fff; height: 2px; }
+
+    /* huge x glyph */
+    .x-glyph {
+      font-family: "Archivo Black", sans-serif;
+      font-size: clamp(20rem, 60vw, 60rem);
+      line-height: 0.78;
+      letter-spacing: -0.08em;
+    }
+
+    /* marquee */
+    .marq-wrap { overflow: hidden; }
+    .marq-track { display: flex; gap: 4rem; will-change: transform; }
+
+    /* logo lockup — x sits at the baseline of FUTURE (bottom-left), tight against the F */
+    .logo-x {
+      font-family: "Inter", sans-serif; font-weight: 600;
+      font-size: 0.36em; vertical-align: baseline; margin-right: 0.02em;
+      letter-spacing: 0; opacity: 0.95;
+      line-height: 1;
+    }
+    .logo-future {
+      font-family: "Inter", sans-serif; font-weight: 600;
+      letter-spacing: -0.025em;
+    }
+
+    /* ========================================================
+       LOADER — initial page reveal overlay
+       ======================================================== */
+    .loader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #000;
+      display: flex; align-items: center; justify-content: center;
+      transition: clip-path 1.0s cubic-bezier(0.76, 0, 0.24, 1) 0.3s;
+      clip-path: inset(0 0 0 0);
+    }
+    .loader.done { clip-path: inset(0 0 100% 0); pointer-events: none; }
+    .loader-inner { text-align: center; width: clamp(260px, 36vw, 460px); }
+    .loader-logo {
+      font-family: "Inter", sans-serif; font-weight: 600;
+      font-size: clamp(2rem, 4.2vw, 3.4rem);
+      letter-spacing: -0.04em; line-height: 1; color: #fff;
+      opacity: 0; transform: translateY(8px);
+      animation: loaderFadeUp 0.9s 0.15s cubic-bezier(0.16,0.84,0.34,1) forwards;
+    }
+    .loader-logo .lx {
+      font-size: 0.36em; vertical-align: baseline;
+      opacity: 0.95; margin-right: 0.015em;
+      text-transform: lowercase;
+    }
+    .loader-jp {
+      font-family: "Noto Sans JP", sans-serif; font-size: 9px;
+      letter-spacing: 0.28em; color: rgba(255,255,255,0.55);
+      margin-top: -2px;
+      opacity: 0;
+      animation: loaderFadeUp 0.9s 0.45s cubic-bezier(0.16,0.84,0.34,1) forwards;
+    }
+    .loader-bottom {
+      margin-top: 2.5rem;
+      display: flex; flex-direction: column; gap: 0.7rem; align-items: center;
+    }
+    .loader-line {
+      width: 100%; height: 1px;
+      background: rgba(255,255,255,0.12);
+      position: relative; overflow: hidden;
+    }
+    .loader-line::after {
+      content: ""; position: absolute; inset: 0;
+      background: #fff; transform: scaleX(0); transform-origin: left center;
+      animation: loaderFill 2.0s 0.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    }
+    .loader-meta {
+      display: flex; justify-content: space-between; width: 100%;
+      font-family: "Inter", sans-serif; font-weight: 500;
+      font-size: 0.65rem; letter-spacing: 0.22em;
+      color: rgba(255,255,255,0.45); text-transform: uppercase;
+      opacity: 0;
+      animation: loaderFadeUp 0.6s 0.6s cubic-bezier(0.16,0.84,0.34,1) forwards;
+    }
+    .loader-pct { color: #fff; font-variant-numeric: tabular-nums; }
+    @keyframes loaderFadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes loaderFill {
+      to { transform: scaleX(1); }
+    }
+    body.loading { overflow: hidden; }
+
+    /* ========================================================
+       CURSOR — dual-ring custom cursor
+       ======================================================== */
+    @media (hover: hover) and (pointer: fine) {
+      body { cursor: none; }
+      a, button, [data-cursor] { cursor: none; }
+    }
+    .cursor-outer, .cursor-inner {
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      mix-blend-mode: difference;
+      will-change: transform;
+    }
+    .cursor-outer {
+      width: 30px; height: 30px;
+      border: 1px solid #fff;
+      border-radius: 50%;
+      transform: translate3d(-50%, -50%, 0);
+      transition: width .35s cubic-bezier(0.16,0.84,0.34,1),
+                  height .35s cubic-bezier(0.16,0.84,0.34,1),
+                  background-color .35s,
+                  border-color .35s;
+    }
+    .cursor-inner {
+      width: 4px; height: 4px;
+      background: #fff;
+      border-radius: 50%;
+      transform: translate3d(-50%, -50%, 0);
+      transition: width .25s cubic-bezier(0.16,0.84,0.34,1),
+                  height .25s cubic-bezier(0.16,0.84,0.34,1);
+    }
+    .cursor-outer.hover {
+      width: 56px; height: 56px;
+      background-color: rgba(255,255,255,0.12);
+    }
+    .cursor-inner.hover { width: 0; height: 0; }
+    @media (hover: none), (pointer: coarse) {
+      .cursor-outer, .cursor-inner { display: none; }
+    }
+
+    /* Hero fade-in — staggered entry after the loader exits */
+    .hero-fade {
+      opacity: 0;
+      transform: translateY(14px);
+      will-change: opacity, transform;
+    }
+  </style>
+</head>
+
+<body class="grain loading">
+
+  <!-- ===== LOADER ===== -->
+  <div id="loader" class="loader" aria-hidden="true">
+    <div class="loader-inner">
+      <div class="loader-logo"><span class="lx">x</span>FUTURE</div>
+      <div class="loader-jp">フューチャー</div>
+      <div class="loader-bottom">
+        <div class="loader-line"></div>
+        <div class="loader-meta">
+          <span>Initializing</span>
+          <span><span id="loaderPct" class="loader-pct">00</span>%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CUSTOM CURSOR ===== -->
+  <div id="cursorOuter" class="cursor-outer" aria-hidden="true"></div>
+  <div id="cursorInner" class="cursor-inner" aria-hidden="true"></div>
+
+  <div class="progress"><div id="progressFill"></div></div>
+
+  <!-- NAV -->
+  <header id="nav" class="fixed top-0 left-0 right-0 z-50 transition-transform duration-500" style="background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);">
+    <div class="max-w-[1480px] mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
+      <a href="#top" class="inline-flex flex-col items-center text-paper leading-none">
+        <span class="inline-flex items-baseline gap-0">
+          <span class="logo-x">x</span>
+          <span class="logo-future text-lg tracking-tight">FUTURE</span>
+        </span>
+        <span class="jp text-dim text-[9px] tracking-[0.28em] leading-none" style="margin-top: -2px;">フューチャー</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-9 label text-dim">
+        <a href="#manifesto"  class="ul-hover hover:text-paper">Manifesto</a>
+        <a href="#drop"       class="ul-hover hover:text-paper">The Drop</a>
+        <a href="#statement"  class="ul-hover hover:text-paper">Statement</a>
+        <a href="#newsletter" class="ul-hover hover:text-paper">Join</a>
+      </nav>
+      <a href="#drop" class="label inline-flex items-center gap-2 text-paper border border-paper/40 px-4 py-2 hover:bg-paper hover:text-ink transition-colors duration-500">
+        Shop <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ========== HERO ========== -->
+    <section id="hero" class="relative overflow-hidden flex items-center justify-center" style="min-height: 100vh;">
+
+      <!-- top-left tag -->
+      <div class="absolute top-28 left-6 md:left-10 z-10 hero-fade">
+        <div class="label text-dim">01 / Shape your future</div>
+      </div>
+      <!-- top-right tag -->
+      <div class="absolute top-28 right-6 md:right-10 z-10 text-right hero-fade">
+        <div class="label text-dim">Vol. 01 — MMXXVI</div>
+        <div class="jp text-dim text-[10px] mt-1">未来を着る</div>
+      </div>
+
+      <!-- LOGO LOCKUP -->
+      <div class="relative z-10 text-center px-4">
+        <div class="inline-flex flex-col items-center leading-none hero-fade">
+          <div class="display text-paper" style="font-size: clamp(3.5rem, 9.5vw, 9.5rem); letter-spacing: -0.055em; line-height: 1;">
+            <span style="font-size: 0.36em; vertical-align: baseline; opacity: 0.95; margin-right: 0.015em; letter-spacing: 0; text-transform: lowercase;">x</span>FUTURE
+          </div>
+          <div class="jp text-dim tracking-[0.28em] leading-none" style="font-size: clamp(0.6rem, 0.85vw, 0.85rem); margin-top: -8px;">
+            フューチャー
+          </div>
+        </div>
+        <div class="mt-10 md:mt-14 label text-dim hero-fade">
+          Wear your intent. Shape your future.
+        </div>
+      </div>
+
+      <!-- scroll cue -->
+      <div class="scroll-cue hero-fade">
+        <span class="label text-dim">scroll</span>
+        <span class="line"></span>
+      </div>
+    </section>
+
+    <!-- ========== X GLYPH — moved up to follow the hero ========== -->
+    <section class="relative overflow-hidden border-b border-rule" style="background: #050505;">
+      <div class="relative flex items-center justify-center" style="min-height: 100vh;">
+        <span id="xGlyph" class="x-glyph text-paper select-none" aria-hidden="true">X</span>
+
+        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-6">
+          <div class="label text-dim mb-6 reveal-y" style="mix-blend-mode: difference;">Wear your intent</div>
+          <h2 class="display text-paper text-5xl md:text-8xl text-center" style="mix-blend-mode: difference;" data-split="char">
+            Shape your future.
+          </h2>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== THE EQUATION — brand thesis as a literal formula ========== -->
+    <section id="equation" class="relative px-6 md:px-10 py-24 md:py-40 border-y border-rule overflow-hidden">
+      <div class="max-w-[1480px] mx-auto">
+
+        <!-- header row -->
+        <div class="flex justify-between items-start mb-14 md:mb-20">
+          <div>
+            <div class="label text-dim">02 / The equation</div>
+            <div class="jp text-faint text-[10px] mt-1">公式 · brand calculus</div>
+          </div>
+          <div class="text-right">
+            <div class="label text-dim">Solved daily.</div>
+            <div class="jp text-faint text-[10px] mt-1">EST. MMXXVI</div>
+          </div>
+        </div>
+
+        <!-- the equation -->
+        <div class="eq-line flex flex-wrap items-baseline justify-center gap-x-5 md:gap-x-10 gap-y-3 text-center">
+          <span class="eq-word" data-eq-word>Discipline</span>
+          <span class="eq-op">×</span>
+          <span class="eq-word" data-eq-word>Awareness</span>
+          <span class="eq-op">×</span>
+          <span class="eq-word" data-eq-word>Evolution</span>
+          <span class="eq-op eq-equals">=</span>
+          <span class="eq-result" data-eq-word>Intent.</span>
+        </div>
+
+        <!-- the underline (drawn in on scroll) -->
+        <div class="eq-rule mx-auto mt-10 md:mt-14"></div>
+
+        <p class="mt-10 md:mt-14 text-dim text-sm md:text-base text-center max-w-lg mx-auto leading-relaxed reveal-y">
+          Wear the calculation. Not the conclusion.
+        </p>
+
+        <!-- definitions row — reveals one at a time -->
+        <div class="hidden md:grid grid-cols-4 gap-8 mt-20 pt-10 border-t border-rule">
+          <div class="reveal-y">
+            <div class="label text-dim mb-3">D</div>
+            <p class="text-paper text-sm leading-relaxed">The willingness to keep going after the urge to stop hits.</p>
+          </div>
+          <div class="reveal-y">
+            <div class="label text-dim mb-3">A</div>
+            <p class="text-paper text-sm leading-relaxed">Knowing what's actually in front of you, not what you wish was.</p>
+          </div>
+          <div class="reveal-y">
+            <div class="label text-dim mb-3">E</div>
+            <p class="text-paper text-sm leading-relaxed">Becoming the next version of yourself. On purpose.</p>
+          </div>
+          <div class="reveal-y">
+            <div class="label text-dim mb-3">I = D × A × E</div>
+            <p class="text-paper text-sm leading-relaxed">Multiply them. Not add. Each one zero, the result is zero.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== MANIFESTO PT 1 ========== -->
+    <section id="manifesto" class="relative px-6 md:px-10 py-32 md:py-48 border-b border-rule">
+      <div class="max-w-[1480px] mx-auto">
+
+        <div class="flex justify-between items-start mb-20">
+          <span class="label text-dim parallax-y" data-parallax="0.15">02 / Manifesto</span>
+          <span class="label text-dim text-right">A statement of intent</span>
+        </div>
+
+        <h2 class="display text-paper text-[12vw] md:text-[7vw] lh-1" style="max-width: 16ch;" data-split="char">
+          Clothing is more than fabric.
+        </h2>
+
+        <p class="mt-12 md:mt-16 text-2xl md:text-4xl font-light text-paper leading-tight max-w-[34ch] reveal-y">
+          It's a statement of intent.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ========== MANIFESTO PT 2 — the three intents (vertical, kinetic) ========== -->
+    <section id="intents" class="relative px-6 md:px-10 py-32 md:py-44 border-b border-rule overflow-hidden">
+      <div class="max-w-[1480px] mx-auto">
+
+        <div class="flex flex-wrap items-end justify-between gap-6 mb-14 md:mb-20">
+          <div>
+            <span class="label text-dim block mb-3">02 / Three intents</span>
+            <h2 class="display text-paper text-6xl md:text-8xl" data-split="char">Why we wear.</h2>
+          </div>
+          <p class="text-dim text-sm md:text-base max-w-xs leading-relaxed reveal-y">
+            Everything we make begins with these three. Daily. Deliberately.
+          </p>
+        </div>
+
+        <!-- intent rows -->
+        <ul class="border-t border-rule">
+
+          <li class="intent-row group grid grid-cols-12 items-center gap-4 py-8 md:py-12 border-b border-rule cursor-default relative">
+            <span class="intent-line"></span>
+            <div class="col-span-2 md:col-span-1">
+              <span class="intent-num mono text-dim text-sm md:text-base" data-final="01">--</span>
+            </div>
+            <div class="col-span-10 md:col-span-6">
+              <span class="intent-verb text-paper" data-split="char">GROW.</span>
+            </div>
+            <div class="hidden md:block md:col-span-4 md:col-start-8">
+              <p class="text-dim text-sm md:text-base leading-relaxed reveal-y">
+                Beyond the comfort of standing still.
+              </p>
+            </div>
+            <span class="intent-arrow col-span-1 hidden md:inline-flex justify-end text-paper text-2xl">→</span>
+          </li>
+
+          <li class="intent-row group grid grid-cols-12 items-center gap-4 py-8 md:py-12 border-b border-rule cursor-default relative">
+            <span class="intent-line"></span>
+            <div class="col-span-2 md:col-span-1">
+              <span class="intent-num mono text-dim text-sm md:text-base" data-final="02">--</span>
+            </div>
+            <div class="col-span-10 md:col-span-6">
+              <span class="intent-verb text-paper" data-split="char">DISCIPLINE.</span>
+            </div>
+            <div class="hidden md:block md:col-span-4 md:col-start-8">
+              <p class="text-dim text-sm md:text-base leading-relaxed reveal-y">
+                Past the moment the urge to quit hits.
+              </p>
+            </div>
+            <span class="intent-arrow col-span-1 hidden md:inline-flex justify-end text-paper text-2xl">→</span>
+          </li>
+
+          <li class="intent-row group grid grid-cols-12 items-center gap-4 py-8 md:py-12 border-b border-rule cursor-default relative">
+            <span class="intent-line"></span>
+            <div class="col-span-2 md:col-span-1">
+              <span class="intent-num mono text-dim text-sm md:text-base" data-final="03">--</span>
+            </div>
+            <div class="col-span-10 md:col-span-6">
+              <span class="intent-verb text-paper" data-split="char">AWARENESS.</span>
+            </div>
+            <div class="hidden md:block md:col-span-4 md:col-start-8">
+              <p class="text-dim text-sm md:text-base leading-relaxed reveal-y">
+                Through the noise of every distraction.
+              </p>
+            </div>
+            <span class="intent-arrow col-span-1 hidden md:inline-flex justify-end text-paper text-2xl">→</span>
+          </li>
+
+        </ul>
+
+      </div>
+    </section>
+
+    <!-- ========== BIG QUOTE ========== -->
+    <section class="relative px-6 md:px-10 py-32 md:py-48 border-b border-rule overflow-hidden">
+      <div class="max-w-[1480px] mx-auto">
+
+        <h2 class="display text-paper text-[10vw] md:text-[5.6vw] lh-1" style="max-width: 24ch;" data-split="char">
+          How many more revolutions before you pursue your evolution?
+        </h2>
+
+        <div class="mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-12 gap-8">
+          <div class="md:col-span-5">
+            <p class="text-2xl md:text-3xl font-light text-paper leading-tight reveal-y">
+              The future isn't random. It's a reflection of today's decisions.
+            </p>
+          </div>
+          <div class="md:col-start-8 md:col-span-5">
+            <p class="text-lg text-dim leading-relaxed reveal-y">
+              Every choice you make has a cost. The future is where you pay it. So invest wisely. Wear it deliberately.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== THE DROP ========== -->
+    <section id="drop" class="relative px-6 md:px-10 py-32 md:py-44 border-b border-rule">
+      <div class="max-w-[1480px] mx-auto">
+
+        <div class="flex flex-wrap items-end justify-between gap-6 mb-16">
+          <div>
+            <span class="label text-dim block mb-3">03 / The Drop · 01</span>
+            <h2 class="display text-paper text-6xl md:text-8xl" data-split="char">The first cut.</h2>
+          </div>
+          <a href="#" class="label inline-flex items-center gap-2 text-paper border border-paper/40 px-5 py-3 hover:bg-paper hover:text-ink transition-colors duration-500">
+            View all <span aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+
+          <a href="#" class="product mask-up group">
+            <div class="product-img" style="background: linear-gradient(180deg, #1a1a1a 0%, #050505 100%);"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="display text-paper text-4xl md:text-6xl opacity-90">DISCIPLINE</span>
+            </div>
+            <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+              <div>
+                <div class="label text-dim">Tee · Black</div>
+                <div class="text-paper font-semibold mt-1">The Discipline</div>
+              </div>
+              <div class="text-paper text-sm">$58</div>
+            </div>
+          </a>
+
+          <a href="#" class="product mask-up group">
+            <div class="product-img" style="background: linear-gradient(135deg, #2a2a2a 0%, #0a0a0a 70%);"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="spray text-paper text-4xl md:text-6xl opacity-90">AWARE</span>
+            </div>
+            <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+              <div>
+                <div class="label text-dim">Hoodie · Bone</div>
+                <div class="text-paper font-semibold mt-1">The Awareness</div>
+              </div>
+              <div class="text-paper text-sm">$124</div>
+            </div>
+          </a>
+
+          <a href="#" class="product mask-up group">
+            <div class="product-img" style="background: linear-gradient(225deg, #1f1f1f 0%, #050505 100%);"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="display text-paper text-4xl md:text-6xl opacity-90">EVOLVE</span>
+            </div>
+            <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+              <div>
+                <div class="label text-dim">Crewneck · Charcoal</div>
+                <div class="text-paper font-semibold mt-1">The Evolution</div>
+              </div>
+              <div class="text-paper text-sm">$98</div>
+            </div>
+          </a>
+
+          <a href="#" class="product mask-up group">
+            <div class="product-img" style="background: linear-gradient(315deg, #1a1a1a 0%, #050505 100%);"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="marker text-paper text-5xl md:text-7xl opacity-90" style="transform: rotate(-4deg);">x</span>
+            </div>
+            <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+              <div>
+                <div class="label text-dim">Cap · Black</div>
+                <div class="text-paper font-semibold mt-1">The Intent</div>
+              </div>
+              <div class="text-paper text-sm">$42</div>
+            </div>
+          </a>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== FONT MORPH — scroll-scrubbed crossfade through six treatments ========== -->
+    <section id="morph" class="relative border-b border-rule" style="height: 500vh; background: #050505;">
+      <div style="position: sticky; top: 0; height: 100vh; overflow: hidden;">
+        <div class="absolute inset-0">
+
+          <!-- top labels -->
+          <div class="absolute top-28 left-6 md:left-10 z-10">
+            <div class="label text-dim">04 / One brand, many faces</div>
+            <div class="jp text-faint text-[10px] mt-1">フォント・モルフ</div>
+          </div>
+          <div class="absolute top-28 right-6 md:right-10 z-10 text-right">
+            <div class="label text-dim">Style</div>
+            <div id="morphLabel" class="display text-paper mt-1" style="font-size: 1.5rem; letter-spacing: -0.02em;">FOUNDATION</div>
+          </div>
+
+          <!-- the layered lockups — all stacked centered, one visible at a time -->
+          <div class="morph-stage">
+            <h2 class="morph-lockup archivo"><span class="x">x</span>FUTURE</h2>
+            <h2 class="morph-lockup bebas"   style="opacity:0;"><span class="x">x</span>FUTURE</h2>
+            <h2 class="morph-lockup audio"   style="opacity:0;"><span class="x">x</span>FUTURE</h2>
+            <h2 class="morph-lockup monoton" style="opacity:0;"><span class="x">x</span>FUTURE</h2>
+            <h2 class="morph-lockup bungee"  style="opacity:0;"><span class="x">x</span>FUTURE</h2>
+            <h2 class="morph-lockup spray"   style="opacity:0;"><span class="x">x</span>FUTURE</h2>
+          </div>
+
+          <!-- bottom: caption only -->
+          <div class="absolute left-1/2 -translate-x-1/2 bottom-16 md:bottom-20 z-10 flex flex-col items-center">
+            <p id="morphCaption" class="text-dim text-sm md:text-base text-center max-w-md font-light">
+              The original logo. Clean, blocky, confident.
+            </p>
+          </div>
+
+          <!-- decorative side rails -->
+          <div class="hidden md:block absolute left-10 top-1/2 -translate-y-1/2 z-10">
+            <div class="label text-faint" style="writing-mode: vertical-rl; transform: rotate(180deg); letter-spacing: 0.34em;">
+              SCROLL TO MORPH
+            </div>
+          </div>
+          <div class="hidden md:block absolute right-10 top-1/2 -translate-y-1/2 z-10">
+            <div class="label text-faint" style="writing-mode: vertical-rl; letter-spacing: 0.34em;">
+              06 STYLES — 01 BRAND
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== STATEMENT (graffiti) ========== -->
+    <section id="statement" class="relative px-6 md:px-10 py-32 md:py-48 border-b border-rule overflow-hidden">
+      <div class="max-w-[1480px] mx-auto">
+
+        <div class="flex justify-between items-start mb-12">
+          <span class="label text-dim">04 / Statement piece</span>
+          <span class="label text-dim text-right">Limited · 200 made</span>
+        </div>
+
+        <div class="text-center my-12 md:my-20">
+          <h2 class="spray-text text-paper text-[18vw] md:text-[12vw] leading-none" data-split="char">
+            WEAR YOUR
+          </h2>
+          <h2 class="spray-text text-paper text-[18vw] md:text-[12vw] leading-none" style="transform: rotate(2deg); margin-top: -0.1em;" data-split="char">
+            INTENT.
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 mt-16">
+          <div class="md:col-span-5">
+            <p class="marker text-paper text-3xl md:text-4xl leading-tight reveal-y" style="transform: rotate(-1.5deg);">
+              The future isn't something you wait for.
+            </p>
+          </div>
+          <div class="md:col-start-7 md:col-span-6">
+            <p class="text-lg md:text-xl font-light text-paper leading-relaxed reveal-y">
+              It's something you <em class="not-italic font-semibold">calculate</em>, <em class="not-italic font-semibold">create</em>, and <em class="not-italic font-semibold">commit</em> to daily.
+            </p>
+            <p class="mt-6 text-base text-dim leading-relaxed reveal-y">
+              You're not just wearing clothing. You're wearing a mindset. You're wearing a reminder.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== NEWSLETTER ========== -->
+    <section id="newsletter" class="relative px-6 md:px-10 py-32 md:py-44 border-b border-rule">
+      <div class="max-w-[1480px] mx-auto">
+
+        <div class="flex justify-between items-start mb-12">
+          <span class="label text-dim">05 / Join the drop</span>
+          <span class="label text-dim text-right">No spam. Only intent.</span>
+        </div>
+
+        <h2 class="display text-paper text-6xl md:text-9xl" style="max-width: 14ch;" data-split="char">
+          First in. First out.
+        </h2>
+
+        <p class="mt-8 text-lg text-dim max-w-md reveal-y">
+          Get notified when the next drop opens. Drops are limited. Reminders are rare.
+        </p>
+
+        <form class="mt-12 max-w-2xl flex items-center gap-4 border-b border-paper/40 pb-2">
+          <input
+            type="email"
+            placeholder="your@email.com"
+            class="flex-1 bg-transparent outline-none text-paper text-xl md:text-2xl py-3 placeholder:text-faint font-light"
+          />
+          <button type="submit" class="label text-paper hover:text-paper/70 transition-colors py-3">
+            Submit →
+          </button>
+        </form>
+
+      </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="px-6 md:px-10 py-12">
+      <div class="max-w-[1480px] mx-auto">
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+          <div class="col-span-2 md:col-span-1">
+            <div class="flex items-baseline gap-0 text-paper">
+              <span class="logo-x">x</span>
+              <span class="logo-future text-2xl">FUTURE</span>
+            </div>
+            <div class="jp text-dim text-xs mt-2">フューチャー</div>
+            <p class="mt-5 text-sm text-dim max-w-[28ch] leading-relaxed">
+              A clothing project rooted in intent, discipline, and awareness.
+            </p>
+          </div>
+
+          <div>
+            <div class="label text-dim mb-4">Shop</div>
+            <ul class="space-y-2 text-paper text-sm">
+              <li><a href="#" class="ul-hover">The Drop · 01</a></li>
+              <li><a href="#" class="ul-hover">Tees</a></li>
+              <li><a href="#" class="ul-hover">Hoodies</a></li>
+              <li><a href="#" class="ul-hover">Accessories</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="label text-dim mb-4">Index</div>
+            <ul class="space-y-2 text-paper text-sm">
+              <li><a href="#manifesto" class="ul-hover">Manifesto</a></li>
+              <li><a href="#statement" class="ul-hover">Statement</a></li>
+              <li><a href="#" class="ul-hover">About</a></li>
+              <li><a href="#" class="ul-hover">Care</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="label text-dim mb-4">Reach</div>
+            <ul class="space-y-2 text-paper text-sm">
+              <li><a href="#" class="ul-hover">Instagram</a></li>
+              <li><a href="#" class="ul-hover">TikTok</a></li>
+              <li><a href="mailto:hello@xfuture.studio" class="ul-hover">hello@xfuture.studio</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border-t border-rule pt-6 flex flex-wrap items-center justify-between gap-4 label text-faint">
+          <div>© MMXXVI xFUTURE. All rights reserved.</div>
+          <div>Wear your intent. Shape your future.</div>
+        </div>
+
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    var hasGSAP  = typeof window.gsap !== 'undefined';
+    var hasST    = hasGSAP && typeof window.ScrollTrigger !== 'undefined';
+    var hasLenis = typeof window.Lenis !== 'undefined';
+
+    // ============================================================
+    // LOADER — counter ticks 00 → 100, then page reveals
+    // ============================================================
+    (function initLoader() {
+      var loaderEl = document.getElementById('loader');
+      var pctEl = document.getElementById('loaderPct');
+      if (!loaderEl || !pctEl) return;
+
+      var progress = 0;
+      function tick() {
+        if (progress < 100) {
+          progress += Math.random() * 6 + 2.5;
+          if (progress > 100) progress = 100;
+          pctEl.textContent = String(Math.floor(progress)).padStart(2, '0');
+          setTimeout(tick, 50 + Math.random() * 40);
+        } else {
+          // Brief hold at 100, then dismiss
+          setTimeout(function() {
+            loaderEl.classList.add('done');
+            document.body.classList.remove('loading');
+
+            // Stagger-fade the hero elements in once the page starts revealing
+            if (typeof gsap !== 'undefined') {
+              gsap.to('.hero-fade', {
+                opacity: 1, y: 0,
+                duration: 1.1,
+                stagger: 0.14,
+                ease: 'expo.out',
+                delay: 0.35   // ~halfway through the clip-path reveal
+              });
+            } else {
+              var heroEls = document.querySelectorAll('.hero-fade');
+              heroEls.forEach(function(el, i) {
+                setTimeout(function() {
+                  el.style.transition = 'opacity 1.1s cubic-bezier(0.16,0.84,0.34,1), transform 1.1s cubic-bezier(0.16,0.84,0.34,1)';
+                  el.style.opacity = '1';
+                  el.style.transform = 'translateY(0)';
+                }, 350 + i * 140);
+              });
+            }
+
+            // refresh ScrollTrigger after loader exits so positions are accurate
+            setTimeout(function() {
+              if (hasST) ScrollTrigger.refresh();
+            }, 1100);
+          }, 380);
+        }
+      }
+      // Begin after the fill animation has had a beat
+      setTimeout(tick, 250);
+    })();
+
+    // ============================================================
+    // CUSTOM CURSOR — dual-ring, lerped follow, hover state
+    // ============================================================
+    (function initCursor() {
+      var outer = document.getElementById('cursorOuter');
+      var inner = document.getElementById('cursorInner');
+      if (!outer || !inner) return;
+      // Disable on touch devices
+      if (window.matchMedia && window.matchMedia('(hover: none)').matches) {
+        outer.style.display = 'none';
+        inner.style.display = 'none';
+        document.body.style.cursor = 'auto';
+        return;
+      }
+
+      var mx = 0, my = 0;
+      var ox = 0, oy = 0;
+      var ix = 0, iy = 0;
+
+      window.addEventListener('mousemove', function(e) {
+        mx = e.clientX; my = e.clientY;
+      }, { passive: true });
+
+      function loop() {
+        // outer: slower lerp for trailing feel
+        ox += (mx - ox) * 0.18;
+        oy += (my - oy) * 0.18;
+        // inner: faster lerp, closer to mouse
+        ix += (mx - ix) * 0.42;
+        iy += (my - iy) * 0.42;
+        outer.style.transform = 'translate3d(' + ox + 'px, ' + oy + 'px, 0) translate(-50%, -50%)';
+        inner.style.transform = 'translate3d(' + ix + 'px, ' + iy + 'px, 0) translate(-50%, -50%)';
+        requestAnimationFrame(loop);
+      }
+      loop();
+
+      // Hover state on interactive elements
+      function bindHover() {
+        var targets = document.querySelectorAll('a, button, [data-cursor], input[type="email"], input[type="submit"]');
+        targets.forEach(function(el) {
+          el.addEventListener('mouseenter', function() {
+            outer.classList.add('hover');
+            inner.classList.add('hover');
+          });
+          el.addEventListener('mouseleave', function() {
+            outer.classList.remove('hover');
+            inner.classList.remove('hover');
+          });
+        });
+      }
+      bindHover();
+      // re-bind after loader removes its overlay (in case interactive elements were added)
+      setTimeout(bindHover, 3000);
+    })();
+
+    // ============================================================
+    // Lenis smooth scroll
+    // ============================================================
+    var lenis = null;
+    if (hasLenis) {
+      try {
+        lenis = new Lenis({ duration: 1.15, smoothWheel: true, lerp: 0.1 });
+        if (hasST) lenis.on('scroll', ScrollTrigger.update);
+        if (hasGSAP) {
+          gsap.ticker.add(function(time){ lenis.raf(time * 1000); });
+          gsap.ticker.lagSmoothing(0);
+        }
+      } catch (e) { lenis = null; }
+    }
+    if (hasST) gsap.registerPlugin(ScrollTrigger);
+
+    document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+      a.addEventListener('click', function(e) {
+        var id = a.getAttribute('href');
+        if (id && id.length > 1) {
+          var target = document.querySelector(id);
+          if (target) {
+            e.preventDefault();
+            if (lenis) lenis.scrollTo(target, { duration: 1.4 });
+            else target.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      });
+    });
+
+    // ============================================================
+    // Text split — non-breaking word containers + per-char animation
+    // ============================================================
+    function splitText(el, mode) {
+      function walk(node) {
+        var children = Array.prototype.slice.call(node.childNodes);
+        for (var i = 0; i < children.length; i++) {
+          var child = children[i];
+          if (child.nodeType === 3) {
+            var text = child.textContent;
+            var frag = document.createDocumentFragment();
+            var tokens = text.split(/(\s+)/);
+            for (var t = 0; t < tokens.length; t++) {
+              var token = tokens[t];
+              if (token.length === 0) continue;
+              if (/^\s+$/.test(token)) {
+                frag.appendChild(document.createTextNode(token));
+                continue;
+              }
+              var word = document.createElement('span');
+              word.className = 'word-wrap';
+              for (var c = 0; c < token.length; c++) {
+                var sc = document.createElement('span'); sc.className = 'split-char';
+                var scInner = document.createElement('span'); scInner.textContent = token[c];
+                sc.appendChild(scInner);
+                word.appendChild(sc);
+              }
+              frag.appendChild(word);
+            }
+            node.replaceChild(frag, child);
+          } else if (child.nodeType === 1) walk(child);
+        }
+      }
+      walk(el);
+    }
+    document.querySelectorAll('[data-split]').forEach(function(el) {
+      splitText(el, el.getAttribute('data-split'));
+    });
+
+    // ============================================================
+    // GSAP scroll animations — bidirectional (play on enter, reverse on leave, both directions)
+    // ============================================================
+    if (hasST) {
+      var TOGGLE_BOTH = 'play reverse play reverse';
+
+      document.querySelectorAll('[data-split]').forEach(function(h) {
+        var chars = h.querySelectorAll('.split-char > span');
+        gsap.to(chars, {
+          y: 0, duration: 1.0, stagger: 0.018, ease: 'expo.out',
+          scrollTrigger: { trigger: h, start: 'top 85%', end: 'bottom 35%', toggleActions: TOGGLE_BOTH }
+        });
+      });
+
+      gsap.utils.toArray('.reveal-y').forEach(function(el) {
+        gsap.to(el, {
+          y: 0, opacity: 1, duration: 1.0, ease: 'expo.out',
+          scrollTrigger: { trigger: el, start: 'top 88%', end: 'bottom 35%', toggleActions: TOGGLE_BOTH }
+        });
+      });
+
+      gsap.utils.toArray('.mask-up').forEach(function(card) {
+        gsap.to(card, {
+          clipPath: 'inset(0 0 0 0)',
+          duration: 1.3, ease: 'expo.out',
+          scrollTrigger: { trigger: card, start: 'top 88%', end: 'bottom 35%', toggleActions: TOGGLE_BOTH }
+        });
+      });
+
+      gsap.utils.toArray('.parallax-y').forEach(function(el) {
+        var amt = parseFloat(el.getAttribute('data-parallax')) || 0.2;
+        gsap.to(el, {
+          y: function() { return -window.innerHeight * amt; },
+          ease: 'none',
+          scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true }
+        });
+      });
+
+      var progressFill = document.getElementById('progressFill');
+      ScrollTrigger.create({
+        start: 0, end: 'max',
+        onUpdate: function(self) { if (progressFill) progressFill.style.width = (self.progress * 100) + '%'; }
+      });
+
+      // Equation — underline draws in when section enters viewport
+      var eqRule = document.querySelector('.eq-rule');
+      if (eqRule) {
+        ScrollTrigger.create({
+          trigger: '#equation',
+          start: 'top 70%',
+          end: 'bottom 35%',
+          toggleActions: 'play reverse play reverse',
+          onEnter:     function(){ eqRule.classList.add('in'); },
+          onEnterBack: function(){ eqRule.classList.add('in'); },
+          onLeave:     function(){ eqRule.classList.remove('in'); },
+          onLeaveBack: function(){ eqRule.classList.remove('in'); }
+        });
+      }
+
+      // Equation — hover one word, dim the others
+      var eqLine = document.querySelector('.eq-line');
+      if (eqLine) {
+        eqLine.querySelectorAll('[data-eq-word]').forEach(function(w) {
+          w.addEventListener('mouseenter', function(){ eqLine.classList.add('hover-active'); });
+          w.addEventListener('mouseleave', function(){ eqLine.classList.remove('hover-active'); });
+        });
+      }
+
+      // Intent number scramble — cycles through random digits, lands on final
+      document.querySelectorAll('.intent-num').forEach(function(el) {
+        var final = el.getAttribute('data-final') || '00';
+        ScrollTrigger.create({
+          trigger: el,
+          start: 'top 85%',
+          onEnter: function() {
+            var ticks = 0, max = 14;
+            var iv = setInterval(function() {
+              ticks++;
+              if (ticks >= max) {
+                el.textContent = final;
+                clearInterval(iv);
+              } else {
+                el.textContent = String(Math.floor(Math.random() * 90 + 10));
+              }
+            }, 55);
+          },
+          onLeaveBack: function() { el.textContent = '--'; }
+        });
+      });
+
+      // X glyph slow scroll-coupled rotation
+      gsap.to('#xGlyph', {
+        rotate: 15, scale: 1.08,
+        ease: 'none',
+        scrollTrigger: { trigger: '#xGlyph', start: 'top bottom', end: 'bottom top', scrub: true }
+      });
+
+      // ============================================================
+      // Font morph — scroll-scrubbed crossfade through 6 lockup variants
+      // ============================================================
+      var morphSection = document.getElementById('morph');
+      if (morphSection) {
+        var lockups = document.querySelectorAll('#morph .morph-lockup');
+        var dots = document.querySelectorAll('#morph .morph-dot');
+        var morphLabel = document.getElementById('morphLabel');
+        var morphCaption = document.getElementById('morphCaption');
+
+        var STYLES = [
+          { name: 'FOUNDATION', desc: 'The original logo. Clean, blocky, confident.' },
+          { name: 'REFINED',    desc: 'Tall and stripped down. Quiet authority.' },
+          { name: 'FUTURE',     desc: 'Cyber, retro-futuristic, made of circuits.' },
+          { name: 'STRIPE',     desc: 'Multi-line retro display. Movement built in.' },
+          { name: 'DISPLAY',    desc: 'Block-shadowed signage. Loud and physical.' },
+          { name: 'STREET',     desc: 'Sprayed on a wall. Where intent meets concrete.' }
+        ];
+
+        var lastIdx = -1;
+        ScrollTrigger.create({
+          trigger: '#morph',
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 0.6,
+          onUpdate: function(self) {
+            var p = self.progress;
+            var n = lockups.length;
+            // pad ends slightly so first and last styles hold a beat at the edges
+            var padded = Math.max(0, Math.min(1, (p - 0.04) / 0.92));
+            var pos = padded * (n - 1);          // 0..n-1
+            var activeIdx = Math.max(0, Math.min(n - 1, Math.round(pos)));
+
+            // Crossfade — each lockup peaks at its index, fades within one step on either side
+            for (var i = 0; i < n; i++) {
+              var dist = Math.abs(pos - i);
+              var op = Math.max(0, 1 - dist * 1.35);
+              // subtle scale ease as they crossfade
+              var scale = 0.92 + (1 - dist * 0.8) * 0.08;
+              if (scale < 0.92) scale = 0.92;
+              lockups[i].style.opacity = op;
+              lockups[i].style.transform = 'scale(' + scale + ')';
+            }
+
+            // Update label + dots only on index change
+            if (activeIdx !== lastIdx) {
+              lastIdx = activeIdx;
+              if (morphLabel)   morphLabel.textContent   = STYLES[activeIdx].name;
+              if (morphCaption) morphCaption.textContent = STYLES[activeIdx].desc;
+              for (var d = 0; d < dots.length; d++) {
+                dots[d].classList.toggle('active', d === activeIdx);
+              }
+            }
+          }
+        });
+      }
+    }
+
+    // ============================================================
+    // Marquee
+    // ============================================================
+    var marqX = 0, marqSpeed = 0.5, marqBoost = 0;
+    var marqTrack = document.querySelector('.marq-track');
+    var marqWidth = 0;
+    function recomputeMarq() { if (marqTrack) marqWidth = marqTrack.scrollWidth / 2; }
+    window.addEventListener('load', recomputeMarq);
+    window.addEventListener('resize', recomputeMarq);
+    setTimeout(recomputeMarq, 600);
+    if (lenis) lenis.on('scroll', function(o){ marqBoost = (o.velocity || 0) * 0.35; });
+    else window.addEventListener('scroll', function(){ marqBoost = 4; }, { passive: true });
+
+    // ============================================================
+    // Nav hide on scroll down
+    // ============================================================
+    var lastY = 0;
+    var navEl = document.getElementById('nav');
+    function navTick(scroll) {
+      if (!navEl) return;
+      if (scroll > lastY && scroll > 200) navEl.style.transform = 'translateY(-100%)';
+      else navEl.style.transform = 'translateY(0%)';
+      lastY = scroll;
+    }
+    if (lenis) lenis.on('scroll', function(o){ navTick(o.scroll); });
+    else window.addEventListener('scroll', function(){ navTick(window.scrollY); }, { passive: true });
+
+    function rafLoop() {
+      if (marqTrack) {
+        marqX -= marqSpeed + marqBoost;
+        if (marqWidth > 0 && Math.abs(marqX) > marqWidth) marqX += marqWidth;
+        marqTrack.style.transform = 'translate3d(' + marqX + 'px, 0, 0)';
+        marqBoost *= 0.94;
+      }
+      requestAnimationFrame(rafLoop);
+    }
+    rafLoop();
+
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ if (hasST) ScrollTrigger.refresh(); });
+    window.addEventListener('load', function(){ setTimeout(function(){ if (hasST) ScrollTrigger.refresh(); }, 400); });
+  </script>
+</body>
+</html>
