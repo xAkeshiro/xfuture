@@ -19,10 +19,10 @@ python3 -m http.server 8000
 - Hero: canvas particle dust, mouse parallax, scrubbed exit on scroll
 - Kinetic marquee strips boosted by scroll velocity (two tracks, opposite directions)
 - Scroll-velocity page skew, animated film grain, custom dual-ring cursor
-- Orbiting text ring around the giant X, scroll-coupled rotation
+- Giant X glyph with scroll-coupled rotation
 - Scrub-highlighted quote, stamped-in graffiti headlines, split-character reveals
 - Product cards: 3D tilt + glare follow, animated pattern art, staggered mask reveals
 - Font-morph section scrubbed through six logo treatments with progress dots
-- Magnetic CTAs and a giant outlined footer wordmark that fills per letter on hover
+- Magnetic CTAs
 
 All ambient loops respect `prefers-reduced-motion`.

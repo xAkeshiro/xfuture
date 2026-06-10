@@ -367,7 +367,7 @@
     }
 
     /* ========================================================
-       MOTION & VISUAL LAYER — dust, marquees, tilt, orbit, skew
+       MOTION & VISUAL LAYER — dust, marquees, tilt, skew
        ======================================================== */
 
     /* hero ambience */
@@ -408,24 +408,6 @@
       font-size: clamp(1.5rem, 3.2vw, 2.8rem); color: rgba(255,255,255,0.75);
     }
     .marq-item.sep { font-size: clamp(1.3rem, 2.6vw, 2.4rem); color: rgba(255,255,255,0.28); }
-
-    /* orbiting text ring around the X */
-    .orbit-text {
-      position: absolute; left: 50%; top: 50%;
-      width: min(78vmin, 720px); height: min(78vmin, 720px);
-      margin-left: calc(min(78vmin, 720px) / -2);
-      margin-top: calc(min(78vmin, 720px) / -2);
-      z-index: 1; pointer-events: none; opacity: 0.6;
-      mix-blend-mode: difference;
-      animation: orbitSpin 50s linear infinite;
-    }
-    @keyframes orbitSpin { to { transform: rotate(360deg); } }
-    .orbit-text text {
-      fill: rgba(255,255,255,0.6);
-      font-family: "Inter", "Noto Sans JP", sans-serif;
-      font-size: 12.5px; font-weight: 500;
-      letter-spacing: 0.4em; text-transform: uppercase;
-    }
 
     /* product card art + glare + chip */
     .products-grid { perspective: 1100px; }
@@ -486,23 +468,9 @@
     /* vertical japanese deco */
     .v-jp { writing-mode: vertical-rl; }
 
-    /* footer mega wordmark — outlined, fills per-character on hover */
-    .footer-mark {
-      font-family: "Inter", sans-serif; font-weight: 700;
-      font-size: clamp(4.5rem, 18.5vw, 310px);
-      line-height: 0.84; letter-spacing: -0.05em;
-      text-transform: uppercase; text-align: center;
-      color: transparent;
-      -webkit-text-stroke: 1px rgba(255,255,255,0.32);
-      user-select: none;
-    }
-    .footer-mark .fm-x { font-size: 0.36em; text-transform: lowercase; }
-    .footer-mark .split-char > span { transition: color .35s; }
-    .footer-mark .split-char:hover > span { color: #fff; }
-
     /* calm the ambient loops down for reduced-motion users */
     @media (prefers-reduced-motion: reduce) {
-      .grain::before, .orbit-text, .art-scan, .art-diag, .art-grid, .art-rings svg,
+      .grain::before, .art-scan, .art-diag, .art-grid, .art-rings svg,
       .scroll-cue .line { animation: none !important; }
     }
   </style>
@@ -615,19 +583,7 @@
     <!-- ========== X GLYPH — moved up to follow the hero ========== -->
     <section class="relative overflow-hidden border-b border-rule" style="background: #050505;">
       <div class="relative flex items-center justify-center" style="min-height: 100vh;">
-        <div data-mouse="26">
-          <span id="xGlyph" class="x-glyph text-paper select-none" aria-hidden="true">X</span>
-        </div>
-
-        <!-- orbiting text ring -->
-        <svg class="orbit-text" viewBox="0 0 400 400" aria-hidden="true">
-          <defs>
-            <path id="orbitPath" d="M 200,200 m -156,0 a 156,156 0 1,1 312,0 a 156,156 0 1,1 -312,0" fill="none" />
-          </defs>
-          <text>
-            <textPath href="#orbitPath" textLength="975" lengthAdjust="spacingAndGlyphs">WEAR YOUR INTENT ✕ SHAPE YOUR FUTURE ✕ 未来を着る ✕ EST. MMXXVI ✕ WEAR YOUR INTENT ✕ DROP 01 ✕</textPath>
-          </text>
-        </svg>
+        <span id="xGlyph" class="x-glyph text-paper select-none" aria-hidden="true">X</span>
 
         <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-6">
           <div class="label text-dim mb-6 reveal-y" style="mix-blend-mode: difference;">Wear your intent</div>
@@ -1095,11 +1051,6 @@
         <div class="border-t border-rule pt-6 flex flex-wrap items-center justify-between gap-4 label text-faint">
           <div>© MMXXVI xFUTURE. All rights reserved.</div>
           <div>Wear your intent. Shape your future.</div>
-        </div>
-
-        <!-- mega wordmark — outlined, rises on scroll, fills per-letter on hover -->
-        <div class="overflow-hidden mt-16 -mb-2" aria-hidden="true">
-          <div class="footer-mark" data-split="char"><span class="fm-x">x</span>FUTURE</div>
         </div>
 
       </div>
