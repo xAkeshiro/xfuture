@@ -243,7 +243,8 @@
 
     /* marquee */
     .marq-wrap { overflow: hidden; }
-    .marq-track { display: flex; gap: 4rem; will-change: transform; }
+    /* spacing lives inside the groups so scrollWidth/2 is the exact loop length */
+    .marq-track { display: flex; gap: 0; will-change: transform; }
 
     /* logo lockup — x sits at the baseline of FUTURE (bottom-left), tight against the F */
     .logo-x {
@@ -1473,6 +1474,11 @@
     window.addEventListener('resize', recomputeMarq);
     setTimeout(recomputeMarq, 600);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(recomputeMarq);
+    // re-measure whenever group content reflows (e.g. webfonts swapping in)
+    if ('ResizeObserver' in window) {
+      var marqRO = new ResizeObserver(recomputeMarq);
+      document.querySelectorAll('.marq-group').forEach(function(g) { marqRO.observe(g); });
+    }
 
     // scroll velocity feeds the marquee boost + page skew
     var skewTarget = 0, skewCur = 0, lastScrollForSkew = window.scrollY || 0;
@@ -1610,19 +1616,20 @@
       : [];
 
     function rafLoop() {
-      if (!REDUCED) {
-        // marquees
-        for (var i = 0; i < marqTracks.length; i++) {
-          var t = marqTracks[i];
-          t.x += (t.sp + marqBoost) * t.dir;
-          if (t.w > 0) {
-            if (t.x <= -t.w) t.x += t.w;
-            else if (t.x > 0) t.x -= t.w;
-          }
+      // marquees — modulo-wrapped so the loop is seamless and never stops;
+      // reduced-motion users get a slow drift instead of a frozen strip
+      for (var i = 0; i < marqTracks.length; i++) {
+        var t = marqTracks[i];
+        if (t.w > 0) {
+          t.x += (REDUCED ? t.sp * 0.25 : t.sp + marqBoost) * t.dir;
+          t.x = t.x % t.w;
+          if (t.x > 0) t.x -= t.w;
           t.el.style.transform = 'translate3d(' + t.x.toFixed(2) + 'px, 0, 0)';
         }
-        marqBoost *= 0.93;
+      }
+      marqBoost *= 0.93;
 
+      if (!REDUCED) {
         // scroll-velocity skew on the page body
         if (mainEl) {
           if (!lenis) {
