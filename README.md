@@ -15,7 +15,7 @@ python3 -m http.server 8000
 
 ## Motion system
 
-- Loader counter → clip-path page reveal → staggered hero entrance (per-character logo rise)
+- Loader counter → clip-path page reveal → staggered hero entrance
 - Hero: canvas particle dust, mouse parallax, scrubbed exit on scroll
 - Kinetic marquee strips boosted by scroll velocity (two tracks, opposite directions)
 - Scroll-velocity page skew, animated film grain, custom dual-ring cursor
