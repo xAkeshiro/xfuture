@@ -119,7 +119,6 @@
       background: #0E0E0E;
       transition: transform .6s cubic-bezier(.16,.84,.34,1);
     }
-    .product:hover { transform: translateY(-6px); }
     .product:hover .product-img { transform: scale(1.04); }
     .product-img { position: absolute; inset: 0; transition: transform 1.2s cubic-bezier(.16,.84,.34,1); }
 
@@ -366,6 +365,146 @@
       transform: translateY(14px);
       will-change: opacity, transform;
     }
+
+    /* ========================================================
+       MOTION & VISUAL LAYER — dust, marquees, tilt, orbit, skew
+       ======================================================== */
+
+    /* hero ambience */
+    #heroDust { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+    .hero-vignette {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.6) 100%);
+    }
+
+    /* living grain — low-fps jitter so the noise breathes */
+    .grain::before { animation: grainShift 1.2s steps(1) infinite; opacity: 0.05; }
+    @keyframes grainShift {
+      0%    { background-position: 0 0; }
+      12.5% { background-position: -32px 18px; }
+      25%   { background-position: 14px -28px; }
+      37.5% { background-position: -26px -14px; }
+      50%   { background-position: 30px 22px; }
+      62.5% { background-position: -18px 30px; }
+      75%   { background-position: 22px -20px; }
+      87.5% { background-position: -30px -8px; }
+      100%  { background-position: 0 0; }
+    }
+
+    /* nav entrance */
+    .nav-fade { opacity: 0; }
+
+    /* kinetic marquee strips */
+    .marq-group { display: flex; align-items: center; gap: 3.5rem; padding-right: 3.5rem; flex: none; }
+    .marq-item {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: clamp(2.4rem, 5.4vw, 4.6rem);
+      line-height: 1; white-space: nowrap; color: #fff;
+      text-transform: uppercase; letter-spacing: 0.01em;
+    }
+    .marq-item.outline { color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.6); }
+    .marq-item.jp {
+      font-family: "Noto Sans JP", sans-serif; font-weight: 300;
+      font-size: clamp(1.5rem, 3.2vw, 2.8rem); color: rgba(255,255,255,0.75);
+    }
+    .marq-item.sep { font-size: clamp(1.3rem, 2.6vw, 2.4rem); color: rgba(255,255,255,0.28); }
+
+    /* orbiting text ring around the X */
+    .orbit-text {
+      position: absolute; left: 50%; top: 50%;
+      width: min(78vmin, 720px); height: min(78vmin, 720px);
+      margin-left: calc(min(78vmin, 720px) / -2);
+      margin-top: calc(min(78vmin, 720px) / -2);
+      z-index: 1; pointer-events: none; opacity: 0.6;
+      mix-blend-mode: difference;
+      animation: orbitSpin 50s linear infinite;
+    }
+    @keyframes orbitSpin { to { transform: rotate(360deg); } }
+    .orbit-text text {
+      fill: rgba(255,255,255,0.6);
+      font-family: "Inter", "Noto Sans JP", sans-serif;
+      font-size: 12.5px; font-weight: 500;
+      letter-spacing: 0.4em; text-transform: uppercase;
+    }
+
+    /* product card art + glare + chip */
+    .products-grid { perspective: 1100px; }
+    .product-art { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+    .art-scan {
+      background: repeating-linear-gradient(0deg, rgba(255,255,255,0.07) 0 1px, transparent 1px 9px);
+      animation: artDrift 14s linear infinite;
+    }
+    .art-diag {
+      background: repeating-linear-gradient(45deg, rgba(255,255,255,0.065) 0 1px, transparent 1px 13px);
+      animation: artDriftD 18s linear infinite;
+    }
+    .art-grid {
+      background-image:
+        linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px);
+      background-size: 26px 26px;
+      animation: artDrift 22s linear infinite;
+    }
+    @keyframes artDrift  { to { background-position: 0 160px; } }
+    @keyframes artDriftD { to { background-position: 160px 160px; } }
+    .art-rings { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .art-rings svg { width: 135%; height: auto; flex: none; animation: ringPulse 7s ease-in-out infinite; }
+    @keyframes ringPulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50%      { transform: scale(1.07); opacity: 0.9; }
+    }
+    .product-glare {
+      position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0;
+      transition: opacity .5s;
+      background: radial-gradient(420px circle at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,0.15), transparent 55%);
+    }
+    .product:hover .product-glare { opacity: 1; }
+    .product-chip {
+      position: absolute; top: 14px; right: 14px; z-index: 4;
+      padding: 0.45rem 0.7rem;
+      border: 1px solid rgba(255,255,255,0.35);
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(4px);
+      color: #fff; opacity: 0; transform: translateY(-10px);
+      transition: opacity .45s, transform .55s cubic-bezier(.16,.84,.34,1);
+    }
+    .product:hover .product-chip { opacity: 1; transform: translateY(0); }
+
+    /* magnetic CTAs — !important so the transform transition survives Tailwind's transition-colors */
+    .magnetic {
+      transition: transform .3s cubic-bezier(.16,.84,.34,1), color .5s, background-color .5s, border-color .5s !important;
+      will-change: transform;
+    }
+
+    /* equation background operators */
+    .eq-bg {
+      position: absolute; z-index: 0; pointer-events: none; user-select: none;
+      font-family: "Bebas Neue", sans-serif; line-height: 1;
+      color: rgba(255,255,255,0.04);
+    }
+
+    /* vertical japanese deco */
+    .v-jp { writing-mode: vertical-rl; }
+
+    /* footer mega wordmark — outlined, fills per-character on hover */
+    .footer-mark {
+      font-family: "Inter", sans-serif; font-weight: 700;
+      font-size: clamp(4.5rem, 18.5vw, 310px);
+      line-height: 0.84; letter-spacing: -0.05em;
+      text-transform: uppercase; text-align: center;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255,255,255,0.32);
+      user-select: none;
+    }
+    .footer-mark .fm-x { font-size: 0.36em; text-transform: lowercase; }
+    .footer-mark .split-char > span { transition: color .35s; }
+    .footer-mark .split-char:hover > span { color: #fff; }
+
+    /* calm the ambient loops down for reduced-motion users */
+    @media (prefers-reduced-motion: reduce) {
+      .grain::before, .orbit-text, .art-scan, .art-diag, .art-grid, .art-rings svg,
+      .scroll-cue .line { animation: none !important; }
+    }
   </style>
 </head>
 
@@ -393,7 +532,7 @@
   <div class="progress"><div id="progressFill"></div></div>
 
   <!-- NAV -->
-  <header id="nav" class="fixed top-0 left-0 right-0 z-50 transition-transform duration-500" style="background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);">
+  <header id="nav" class="nav-fade fixed top-0 left-0 right-0 z-50 transition-transform duration-500" style="background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);">
     <div class="max-w-[1480px] mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
       <a href="#top" class="inline-flex flex-col items-center text-paper leading-none">
         <span class="inline-flex items-baseline gap-0">
@@ -408,7 +547,7 @@
         <a href="#statement"  class="ul-hover hover:text-paper">Statement</a>
         <a href="#newsletter" class="ul-hover hover:text-paper">Join</a>
       </nav>
-      <a href="#drop" class="label inline-flex items-center gap-2 text-paper border border-paper/40 px-4 py-2 hover:bg-paper hover:text-ink transition-colors duration-500">
+      <a href="#drop" class="magnetic label inline-flex items-center gap-2 text-paper border border-paper/40 px-4 py-2 hover:bg-paper hover:text-ink transition-colors duration-500">
         Shop <span aria-hidden="true">→</span>
       </a>
     </div>
@@ -429,18 +568,26 @@
         <div class="jp text-dim text-[10px] mt-1">未来を着る</div>
       </div>
 
+      <!-- ambient particle dust + vignette -->
+      <canvas id="heroDust" aria-hidden="true"></canvas>
+      <div class="hero-vignette" aria-hidden="true"></div>
+
       <!-- LOGO LOCKUP -->
-      <div class="relative z-10 text-center px-4">
-        <div class="inline-flex flex-col items-center leading-none hero-fade">
-          <div class="display text-paper" style="font-size: clamp(3.5rem, 9.5vw, 9.5rem); letter-spacing: -0.055em; line-height: 1;">
-            <span style="font-size: 0.36em; vertical-align: baseline; opacity: 0.95; margin-right: 0.015em; letter-spacing: 0; text-transform: lowercase;">x</span>FUTURE
-          </div>
-          <div class="jp text-dim tracking-[0.28em] leading-none" style="font-size: clamp(0.6rem, 0.85vw, 0.85rem); margin-top: -8px;">
-            フューチャー
+      <div id="heroInner" class="relative z-10 text-center px-4">
+        <div data-mouse="16">
+          <div class="inline-flex flex-col items-center leading-none hero-fade">
+            <div id="heroLogo" class="display text-paper" data-split="char" data-split-manual style="font-size: clamp(3.5rem, 9.5vw, 9.5rem); letter-spacing: -0.055em; line-height: 1;">
+              <span style="font-size: 0.36em; vertical-align: baseline; opacity: 0.95; margin-right: 0.015em; letter-spacing: 0; text-transform: lowercase;">x</span>FUTURE
+            </div>
+            <div class="jp text-dim tracking-[0.28em] leading-none" style="font-size: clamp(0.6rem, 0.85vw, 0.85rem); margin-top: -8px;">
+              フューチャー
+            </div>
           </div>
         </div>
-        <div class="mt-10 md:mt-14 label text-dim hero-fade">
-          Wear your intent. Shape your future.
+        <div data-mouse="9">
+          <div class="mt-10 md:mt-14 label text-dim hero-fade">
+            Wear your intent. Shape your future.
+          </div>
         </div>
       </div>
 
@@ -451,10 +598,36 @@
       </div>
     </section>
 
+    <!-- ========== MARQUEE — kinetic type strip, boosted by scroll velocity ========== -->
+    <section class="marq-wrap border-y border-rule py-5 md:py-7 select-none" aria-hidden="true">
+      <div class="marq-track" data-dir="-1" data-speed="0.6">
+        <div class="marq-group">
+          <span class="marq-item">Wear your intent</span><span class="marq-item sep">✕</span><span class="marq-item outline">Shape your future</span><span class="marq-item sep">✕</span><span class="marq-item jp">未来を着る</span><span class="marq-item sep">✕</span><span class="marq-item">Drop 01 — Live</span><span class="marq-item sep">✕</span><span class="marq-item outline">Est. MMXXVI</span><span class="marq-item sep">✕</span>
+          <span class="marq-item">Wear your intent</span><span class="marq-item sep">✕</span><span class="marq-item outline">Shape your future</span><span class="marq-item sep">✕</span><span class="marq-item jp">未来を着る</span><span class="marq-item sep">✕</span><span class="marq-item">Drop 01 — Live</span><span class="marq-item sep">✕</span><span class="marq-item outline">Est. MMXXVI</span><span class="marq-item sep">✕</span>
+        </div>
+        <div class="marq-group" aria-hidden="true">
+          <span class="marq-item">Wear your intent</span><span class="marq-item sep">✕</span><span class="marq-item outline">Shape your future</span><span class="marq-item sep">✕</span><span class="marq-item jp">未来を着る</span><span class="marq-item sep">✕</span><span class="marq-item">Drop 01 — Live</span><span class="marq-item sep">✕</span><span class="marq-item outline">Est. MMXXVI</span><span class="marq-item sep">✕</span>
+          <span class="marq-item">Wear your intent</span><span class="marq-item sep">✕</span><span class="marq-item outline">Shape your future</span><span class="marq-item sep">✕</span><span class="marq-item jp">未来を着る</span><span class="marq-item sep">✕</span><span class="marq-item">Drop 01 — Live</span><span class="marq-item sep">✕</span><span class="marq-item outline">Est. MMXXVI</span><span class="marq-item sep">✕</span>
+        </div>
+      </div>
+    </section>
+
     <!-- ========== X GLYPH — moved up to follow the hero ========== -->
     <section class="relative overflow-hidden border-b border-rule" style="background: #050505;">
       <div class="relative flex items-center justify-center" style="min-height: 100vh;">
-        <span id="xGlyph" class="x-glyph text-paper select-none" aria-hidden="true">X</span>
+        <div data-mouse="26">
+          <span id="xGlyph" class="x-glyph text-paper select-none" aria-hidden="true">X</span>
+        </div>
+
+        <!-- orbiting text ring -->
+        <svg class="orbit-text" viewBox="0 0 400 400" aria-hidden="true">
+          <defs>
+            <path id="orbitPath" d="M 200,200 m -156,0 a 156,156 0 1,1 312,0 a 156,156 0 1,1 -312,0" fill="none" />
+          </defs>
+          <text>
+            <textPath href="#orbitPath" textLength="975" lengthAdjust="spacingAndGlyphs">WEAR YOUR INTENT ✕ SHAPE YOUR FUTURE ✕ 未来を着る ✕ EST. MMXXVI ✕ WEAR YOUR INTENT ✕ DROP 01 ✕</textPath>
+          </text>
+        </svg>
 
         <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-6">
           <div class="label text-dim mb-6 reveal-y" style="mix-blend-mode: difference;">Wear your intent</div>
@@ -467,7 +640,10 @@
 
     <!-- ========== THE EQUATION — brand thesis as a literal formula ========== -->
     <section id="equation" class="relative px-6 md:px-10 py-24 md:py-40 border-y border-rule overflow-hidden">
-      <div class="max-w-[1480px] mx-auto">
+      <!-- giant parallax operators drifting behind the equation -->
+      <span class="eq-bg parallax-y select-none" data-parallax="0.18" style="font-size: 34vw; left: -5%; top: 4%;" aria-hidden="true">×</span>
+      <span class="eq-bg parallax-y select-none" data-parallax="0.32" style="font-size: 26vw; right: -3%; bottom: -10%;" aria-hidden="true">=</span>
+      <div class="max-w-[1480px] mx-auto relative z-10">
 
         <!-- header row -->
         <div class="flex justify-between items-start mb-14 md:mb-20">
@@ -523,11 +699,12 @@
     </section>
 
     <!-- ========== MANIFESTO PT 1 ========== -->
-    <section id="manifesto" class="relative px-6 md:px-10 py-32 md:py-48 border-b border-rule">
+    <section id="manifesto" class="relative px-6 md:px-10 py-32 md:py-48 border-b border-rule overflow-hidden">
+      <div class="hidden md:block absolute right-12 top-24 v-jp jp text-faint text-xs tracking-[0.5em] parallax-y select-none" data-parallax="0.22" aria-hidden="true">意図を着る — 未来を形づくる</div>
       <div class="max-w-[1480px] mx-auto">
 
         <div class="flex justify-between items-start mb-20">
-          <span class="label text-dim parallax-y" data-parallax="0.15">02 / Manifesto</span>
+          <span class="label text-dim parallax-y" data-parallax="0.15">03 / Manifesto</span>
           <span class="label text-dim text-right">A statement of intent</span>
         </div>
 
@@ -548,7 +725,7 @@
 
         <div class="flex flex-wrap items-end justify-between gap-6 mb-14 md:mb-20">
           <div>
-            <span class="label text-dim block mb-3">02 / Three intents</span>
+            <span class="label text-dim block mb-3">04 / Three intents</span>
             <h2 class="display text-paper text-6xl md:text-8xl" data-split="char">Why we wear.</h2>
           </div>
           <p class="text-dim text-sm md:text-base max-w-xs leading-relaxed reveal-y">
@@ -616,7 +793,7 @@
     <section class="relative px-6 md:px-10 py-32 md:py-48 border-b border-rule overflow-hidden">
       <div class="max-w-[1480px] mx-auto">
 
-        <h2 class="display text-paper text-[10vw] md:text-[5.6vw] lh-1" style="max-width: 24ch;" data-split="char">
+        <h2 class="display text-paper text-[10vw] md:text-[5.6vw] lh-1" style="max-width: 24ch;" data-split="char" data-scrub>
           How many more revolutions before you pursue your evolution?
         </h2>
 
@@ -642,21 +819,24 @@
 
         <div class="flex flex-wrap items-end justify-between gap-6 mb-16">
           <div>
-            <span class="label text-dim block mb-3">03 / The Drop · 01</span>
+            <span class="label text-dim block mb-3">05 / The Drop · 01</span>
             <h2 class="display text-paper text-6xl md:text-8xl" data-split="char">The first cut.</h2>
           </div>
-          <a href="#" class="label inline-flex items-center gap-2 text-paper border border-paper/40 px-5 py-3 hover:bg-paper hover:text-ink transition-colors duration-500">
+          <a href="#" class="magnetic label inline-flex items-center gap-2 text-paper border border-paper/40 px-5 py-3 hover:bg-paper hover:text-ink transition-colors duration-500">
             View all <span aria-hidden="true">→</span>
           </a>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+        <div class="products-grid grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
 
           <a href="#" class="product mask-up group">
             <div class="product-img" style="background: linear-gradient(180deg, #1a1a1a 0%, #050505 100%);"></div>
+            <div class="product-art art-scan" aria-hidden="true"></div>
             <div class="absolute inset-0 flex items-center justify-center">
               <span class="display text-paper text-4xl md:text-6xl opacity-90">DISCIPLINE</span>
             </div>
+            <span class="product-chip label">View →</span>
+            <div class="product-glare" aria-hidden="true"></div>
             <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between">
               <div>
                 <div class="label text-dim">Tee · Black</div>
@@ -668,9 +848,19 @@
 
           <a href="#" class="product mask-up group">
             <div class="product-img" style="background: linear-gradient(135deg, #2a2a2a 0%, #0a0a0a 70%);"></div>
+            <div class="product-art art-rings" aria-hidden="true">
+              <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="28"  stroke="rgba(255,255,255,0.13)" />
+                <circle cx="100" cy="100" r="54"  stroke="rgba(255,255,255,0.10)" />
+                <circle cx="100" cy="100" r="80"  stroke="rgba(255,255,255,0.08)" />
+                <circle cx="100" cy="100" r="106" stroke="rgba(255,255,255,0.06)" />
+              </svg>
+            </div>
             <div class="absolute inset-0 flex items-center justify-center">
               <span class="spray text-paper text-4xl md:text-6xl opacity-90">AWARE</span>
             </div>
+            <span class="product-chip label">View →</span>
+            <div class="product-glare" aria-hidden="true"></div>
             <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between">
               <div>
                 <div class="label text-dim">Hoodie · Bone</div>
@@ -682,9 +872,12 @@
 
           <a href="#" class="product mask-up group">
             <div class="product-img" style="background: linear-gradient(225deg, #1f1f1f 0%, #050505 100%);"></div>
+            <div class="product-art art-diag" aria-hidden="true"></div>
             <div class="absolute inset-0 flex items-center justify-center">
               <span class="display text-paper text-4xl md:text-6xl opacity-90">EVOLVE</span>
             </div>
+            <span class="product-chip label">View →</span>
+            <div class="product-glare" aria-hidden="true"></div>
             <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between">
               <div>
                 <div class="label text-dim">Crewneck · Charcoal</div>
@@ -696,9 +889,12 @@
 
           <a href="#" class="product mask-up group">
             <div class="product-img" style="background: linear-gradient(315deg, #1a1a1a 0%, #050505 100%);"></div>
+            <div class="product-art art-grid" aria-hidden="true"></div>
             <div class="absolute inset-0 flex items-center justify-center">
               <span class="marker text-paper text-5xl md:text-7xl opacity-90" style="transform: rotate(-4deg);">x</span>
             </div>
+            <span class="product-chip label">View →</span>
+            <div class="product-glare" aria-hidden="true"></div>
             <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between">
               <div>
                 <div class="label text-dim">Cap · Black</div>
@@ -720,7 +916,7 @@
 
           <!-- top labels -->
           <div class="absolute top-28 left-6 md:left-10 z-10">
-            <div class="label text-dim">04 / One brand, many faces</div>
+            <div class="label text-dim">06 / One brand, many faces</div>
             <div class="jp text-faint text-[10px] mt-1">フォント・モルフ</div>
           </div>
           <div class="absolute top-28 right-6 md:right-10 z-10 text-right">
@@ -738,8 +934,16 @@
             <h2 class="morph-lockup spray"   style="opacity:0;"><span class="x">x</span>FUTURE</h2>
           </div>
 
-          <!-- bottom: caption only -->
+          <!-- bottom: progress dots + caption -->
           <div class="absolute left-1/2 -translate-x-1/2 bottom-16 md:bottom-20 z-10 flex flex-col items-center">
+            <div class="morph-dots mb-5" aria-hidden="true">
+              <span class="morph-dot active"></span>
+              <span class="morph-dot"></span>
+              <span class="morph-dot"></span>
+              <span class="morph-dot"></span>
+              <span class="morph-dot"></span>
+              <span class="morph-dot"></span>
+            </div>
             <p id="morphCaption" class="text-dim text-sm md:text-base text-center max-w-md font-light">
               The original logo. Clean, blocky, confident.
             </p>
@@ -766,15 +970,15 @@
       <div class="max-w-[1480px] mx-auto">
 
         <div class="flex justify-between items-start mb-12">
-          <span class="label text-dim">04 / Statement piece</span>
+          <span class="label text-dim">07 / Statement piece</span>
           <span class="label text-dim text-right">Limited · 200 made</span>
         </div>
 
         <div class="text-center my-12 md:my-20">
-          <h2 class="spray-text text-paper text-[18vw] md:text-[12vw] leading-none" data-split="char">
+          <h2 class="spray-text text-paper text-[18vw] md:text-[12vw] leading-none" data-split="char" data-stamp>
             WEAR YOUR
           </h2>
-          <h2 class="spray-text text-paper text-[18vw] md:text-[12vw] leading-none" style="transform: rotate(2deg); margin-top: -0.1em;" data-split="char">
+          <h2 class="spray-text text-paper text-[18vw] md:text-[12vw] leading-none" style="transform: rotate(2deg); margin-top: -0.1em;" data-split="char" data-stamp>
             INTENT.
           </h2>
         </div>
@@ -802,7 +1006,7 @@
       <div class="max-w-[1480px] mx-auto">
 
         <div class="flex justify-between items-start mb-12">
-          <span class="label text-dim">05 / Join the drop</span>
+          <span class="label text-dim">08 / Join the drop</span>
           <span class="label text-dim text-right">No spam. Only intent.</span>
         </div>
 
@@ -820,11 +1024,25 @@
             placeholder="your@email.com"
             class="flex-1 bg-transparent outline-none text-paper text-xl md:text-2xl py-3 placeholder:text-faint font-light"
           />
-          <button type="submit" class="label text-paper hover:text-paper/70 transition-colors py-3">
+          <button type="submit" class="magnetic label text-paper hover:text-paper/70 transition-colors py-3">
             Submit →
           </button>
         </form>
 
+      </div>
+    </section>
+
+    <!-- ========== MARQUEE — reversed, the equation in motion ========== -->
+    <section class="marq-wrap border-b border-rule py-5 md:py-7 select-none" aria-hidden="true">
+      <div class="marq-track" data-dir="1" data-speed="0.5">
+        <div class="marq-group">
+          <span class="marq-item">Discipline</span><span class="marq-item sep">×</span><span class="marq-item outline">Awareness</span><span class="marq-item sep">×</span><span class="marq-item">Evolution</span><span class="marq-item sep">=</span><span class="marq-item outline">Intent.</span><span class="marq-item sep">✕</span><span class="marq-item jp">規律 × 意識 × 進化</span><span class="marq-item sep">✕</span>
+          <span class="marq-item">Discipline</span><span class="marq-item sep">×</span><span class="marq-item outline">Awareness</span><span class="marq-item sep">×</span><span class="marq-item">Evolution</span><span class="marq-item sep">=</span><span class="marq-item outline">Intent.</span><span class="marq-item sep">✕</span><span class="marq-item jp">規律 × 意識 × 進化</span><span class="marq-item sep">✕</span>
+        </div>
+        <div class="marq-group" aria-hidden="true">
+          <span class="marq-item">Discipline</span><span class="marq-item sep">×</span><span class="marq-item outline">Awareness</span><span class="marq-item sep">×</span><span class="marq-item">Evolution</span><span class="marq-item sep">=</span><span class="marq-item outline">Intent.</span><span class="marq-item sep">✕</span><span class="marq-item jp">規律 × 意識 × 進化</span><span class="marq-item sep">✕</span>
+          <span class="marq-item">Discipline</span><span class="marq-item sep">×</span><span class="marq-item outline">Awareness</span><span class="marq-item sep">×</span><span class="marq-item">Evolution</span><span class="marq-item sep">=</span><span class="marq-item outline">Intent.</span><span class="marq-item sep">✕</span><span class="marq-item jp">規律 × 意識 × 進化</span><span class="marq-item sep">✕</span>
+        </div>
       </div>
     </section>
 
@@ -879,6 +1097,11 @@
           <div>Wear your intent. Shape your future.</div>
         </div>
 
+        <!-- mega wordmark — outlined, rises on scroll, fills per-letter on hover -->
+        <div class="overflow-hidden mt-16 -mb-2" aria-hidden="true">
+          <div class="footer-mark" data-split="char"><span class="fm-x">x</span>FUTURE</div>
+        </div>
+
       </div>
     </footer>
 
@@ -888,6 +1111,18 @@
     var hasGSAP  = typeof window.gsap !== 'undefined';
     var hasST    = hasGSAP && typeof window.ScrollTrigger !== 'undefined';
     var hasLenis = typeof window.Lenis !== 'undefined';
+    var REDUCED  = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var FINE     = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+
+    // shared normalized mouse position (-0.5 .. 0.5) — drives parallax + dust drift
+    var mouseNX = 0, mouseNY = 0;
+    if (FINE) {
+      window.addEventListener('mousemove', function(e) {
+        mouseNX = e.clientX / window.innerWidth  - 0.5;
+        mouseNY = e.clientY / window.innerHeight - 0.5;
+      }, { passive: true });
+    }
+    function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 
     // ============================================================
     // LOADER — counter ticks 00 → 100, then page reveals
@@ -919,6 +1154,11 @@
                 ease: 'expo.out',
                 delay: 0.35   // ~halfway through the clip-path reveal
               });
+              // per-character rise on the logo while its block fades in
+              gsap.to('#heroLogo .split-char > span', {
+                y: 0, duration: 1.3, stagger: 0.055, ease: 'expo.out', delay: 0.5
+              });
+              gsap.to('#nav', { opacity: 1, duration: 1.0, ease: 'power2.out', delay: 0.55 });
             } else {
               var heroEls = document.querySelectorAll('.hero-fade');
               heroEls.forEach(function(el, i) {
@@ -928,6 +1168,9 @@
                   el.style.transform = 'translateY(0)';
                 }, 350 + i * 140);
               });
+              var navFallback = document.getElementById('nav');
+              if (navFallback) { navFallback.style.transition = 'opacity 1s'; navFallback.style.opacity = '1'; }
+              document.querySelectorAll('#heroLogo .split-char > span').forEach(function(s) { s.style.transform = 'none'; });
             }
 
             // refresh ScrollTrigger after loader exits so positions are accurate
@@ -1065,6 +1308,11 @@
       splitText(el, el.getAttribute('data-split'));
     });
 
+    // safety net: if GSAP/ScrollTrigger never loaded, un-hide split characters
+    if (!hasST) {
+      document.querySelectorAll('.split-char > span').forEach(function(s) { s.style.transform = 'none'; });
+    }
+
     // ============================================================
     // GSAP scroll animations — bidirectional (play on enter, reverse on leave, both directions)
     // ============================================================
@@ -1072,7 +1320,34 @@
       var TOGGLE_BOTH = 'play reverse play reverse';
 
       document.querySelectorAll('[data-split]').forEach(function(h) {
+        if (h.hasAttribute('data-split-manual')) return; // animated by the loader instead
         var chars = h.querySelectorAll('.split-char > span');
+
+        // scrub mode — chars sit in place and brighten as the section scrolls through
+        if (h.hasAttribute('data-scrub')) {
+          gsap.set(chars, { y: 0 });
+          gsap.fromTo(chars, { opacity: 0.12 }, {
+            opacity: 1, stagger: 0.035, ease: 'none',
+            scrollTrigger: { trigger: h, start: 'top 80%', end: 'center 38%', scrub: 0.4 }
+          });
+          return;
+        }
+
+        // stamp mode — chars slam in with random rotation, like sprayed marks
+        if (h.hasAttribute('data-stamp')) {
+          gsap.set(h.querySelectorAll('.split-char'), { clipPath: 'none' });
+          gsap.set(chars, { y: 0 });
+          gsap.from(chars, {
+            y: 70, opacity: 0, scale: 0.5,
+            rotation: function() { return gsap.utils.random(-18, 18); },
+            transformOrigin: '50% 80%',
+            duration: 0.7, ease: 'back.out(1.7)',
+            stagger: { each: 0.035, from: 'random' },
+            scrollTrigger: { trigger: h, start: 'top 85%', end: 'bottom 35%', toggleActions: TOGGLE_BOTH }
+          });
+          return;
+        }
+
         gsap.to(chars, {
           y: 0, duration: 1.0, stagger: 0.018, ease: 'expo.out',
           scrollTrigger: { trigger: h, start: 'top 85%', end: 'bottom 35%', toggleActions: TOGGLE_BOTH }
@@ -1087,9 +1362,12 @@
       });
 
       gsap.utils.toArray('.mask-up').forEach(function(card) {
+        // stagger cards by their position among mask-up siblings
+        var idx = 0, sib = card;
+        while ((sib = sib.previousElementSibling)) { if (sib.classList && sib.classList.contains('mask-up')) idx++; }
         gsap.to(card, {
           clipPath: 'inset(0 0 0 0)',
-          duration: 1.3, ease: 'expo.out',
+          duration: 1.3, delay: idx * 0.12, ease: 'expo.out',
           scrollTrigger: { trigger: card, start: 'top 88%', end: 'bottom 35%', toggleActions: TOGGLE_BOTH }
         });
       });
@@ -1162,6 +1440,12 @@
         scrollTrigger: { trigger: '#xGlyph', start: 'top bottom', end: 'bottom top', scrub: true }
       });
 
+      // Hero exits with a scrubbed drift + fade as you scroll away
+      gsap.to('#heroInner', {
+        y: -70, scale: 0.94, opacity: 0, ease: 'none',
+        scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom 30%', scrub: 0.4 }
+      });
+
       // ============================================================
       // Font morph — scroll-scrubbed crossfade through 6 lockup variants
       // ============================================================
@@ -1203,14 +1487,20 @@
               var scale = 0.92 + (1 - dist * 0.8) * 0.08;
               if (scale < 0.92) scale = 0.92;
               lockups[i].style.opacity = op;
-              lockups[i].style.transform = 'scale(' + scale + ')';
+              lockups[i].style.transform = 'translateY(' + ((i - pos) * 26).toFixed(1) + 'px) scale(' + scale + ')';
             }
 
             // Update label + dots only on index change
             if (activeIdx !== lastIdx) {
               lastIdx = activeIdx;
-              if (morphLabel)   morphLabel.textContent   = STYLES[activeIdx].name;
-              if (morphCaption) morphCaption.textContent = STYLES[activeIdx].desc;
+              if (morphLabel) {
+                morphLabel.textContent = STYLES[activeIdx].name;
+                gsap.fromTo(morphLabel, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: 'expo.out', overwrite: 'auto' });
+              }
+              if (morphCaption) {
+                morphCaption.textContent = STYLES[activeIdx].desc;
+                gsap.fromTo(morphCaption, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'power2.out', overwrite: 'auto' });
+              }
               for (var d = 0; d < dots.length; d++) {
                 dots[d].classList.toggle('active', d === activeIdx);
               }
@@ -1221,17 +1511,36 @@
     }
 
     // ============================================================
-    // Marquee
+    // Marquees — multi-track, direction-aware, scroll-velocity boosted
     // ============================================================
-    var marqX = 0, marqSpeed = 0.5, marqBoost = 0;
-    var marqTrack = document.querySelector('.marq-track');
-    var marqWidth = 0;
-    function recomputeMarq() { if (marqTrack) marqWidth = marqTrack.scrollWidth / 2; }
+    var marqBoost = 0;
+    var marqTracks = Array.prototype.slice.call(document.querySelectorAll('.marq-track')).map(function(t) {
+      return {
+        el: t, x: 0, w: 0,
+        dir: parseFloat(t.getAttribute('data-dir')) || -1,
+        sp:  parseFloat(t.getAttribute('data-speed')) || 0.6
+      };
+    });
+    function recomputeMarq() {
+      marqTracks.forEach(function(t) { t.w = t.el.scrollWidth / 2; });
+    }
     window.addEventListener('load', recomputeMarq);
     window.addEventListener('resize', recomputeMarq);
     setTimeout(recomputeMarq, 600);
-    if (lenis) lenis.on('scroll', function(o){ marqBoost = (o.velocity || 0) * 0.35; });
-    else window.addEventListener('scroll', function(){ marqBoost = 4; }, { passive: true });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(recomputeMarq);
+
+    // scroll velocity feeds the marquee boost + page skew
+    var skewTarget = 0, skewCur = 0, lastScrollForSkew = window.scrollY || 0;
+    var mainEl = document.querySelector('main');
+    if (lenis) {
+      lenis.on('scroll', function(o) {
+        var v = o.velocity || 0;
+        marqBoost = Math.abs(v) * 0.35;
+        skewTarget = clamp(v * 0.045, -1.25, 1.25);
+      });
+    } else {
+      window.addEventListener('scroll', function() { marqBoost = 3; }, { passive: true });
+    }
 
     // ============================================================
     // Nav hide on scroll down
@@ -1247,13 +1556,153 @@
     if (lenis) lenis.on('scroll', function(o){ navTick(o.scroll); });
     else window.addEventListener('scroll', function(){ navTick(window.scrollY); }, { passive: true });
 
-    function rafLoop() {
-      if (marqTrack) {
-        marqX -= marqSpeed + marqBoost;
-        if (marqWidth > 0 && Math.abs(marqX) > marqWidth) marqX += marqWidth;
-        marqTrack.style.transform = 'translate3d(' + marqX + 'px, 0, 0)';
-        marqBoost *= 0.94;
+    // ============================================================
+    // Hero dust — drifting particle field on canvas
+    // ============================================================
+    (function initDust() {
+      if (REDUCED) return;
+      var cv = document.getElementById('heroDust');
+      var hero = document.getElementById('hero');
+      if (!cv || !hero || !cv.getContext) return;
+      var ctx = cv.getContext('2d');
+      var w = 0, h = 0, parts = [], running = true, t = 0;
+
+      function make(fromBottom) {
+        return {
+          x: Math.random() * w,
+          y: fromBottom ? h + 8 : Math.random() * h,
+          r: 0.4 + Math.random() * 1.1,
+          a: 0.06 + Math.random() * 0.3,
+          vy: -(0.08 + Math.random() * 0.3),
+          vx: (Math.random() - 0.5) * 0.12,
+          tw: 0.5 + Math.random() * 2,
+          ph: Math.random() * 6.283
+        };
       }
+      function resize() {
+        var dpr = Math.min(2, window.devicePixelRatio || 1);
+        w = hero.clientWidth; h = hero.clientHeight;
+        cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+        cv.style.width = w + 'px'; cv.style.height = h + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        var n = Math.min(150, Math.round(w * h / 14000));
+        parts = [];
+        for (var i = 0; i < n; i++) parts.push(make(false));
+      }
+      function frame() {
+        requestAnimationFrame(frame);
+        if (!running) return;
+        t += 0.016;
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = '#fff';
+        for (var i = 0; i < parts.length; i++) {
+          var p = parts[i];
+          p.x += p.vx + mouseNX * 0.4;
+          p.y += p.vy + mouseNY * 0.15;
+          if (p.y < -10 || p.y > h + 14 || p.x < -10 || p.x > w + 10) { parts[i] = p = make(true); }
+          ctx.globalAlpha = p.a * (0.65 + 0.35 * Math.sin(t * p.tw + p.ph));
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, 6.283);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+      // only burn frames while the hero is on screen
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function(en) { running = en[0].isIntersecting; }).observe(hero);
+      }
+      frame();
+    })();
+
+    // ============================================================
+    // Product cards — 3D tilt + glare follow
+    // ============================================================
+    if (FINE && !REDUCED) {
+      document.querySelectorAll('.product').forEach(function(card) {
+        var glare = card.querySelector('.product-glare');
+        card.addEventListener('mousemove', function(e) {
+          var r = card.getBoundingClientRect();
+          var px = (e.clientX - r.left) / r.width;
+          var py = (e.clientY - r.top) / r.height;
+          card.style.transition = 'transform .18s cubic-bezier(.16,.84,.34,1)';
+          card.style.transform = 'translateY(-6px) rotateX(' + ((py - 0.5) * -8).toFixed(2) + 'deg) rotateY(' + ((px - 0.5) * 10).toFixed(2) + 'deg)';
+          if (glare) {
+            glare.style.setProperty('--gx', (px * 100).toFixed(1) + '%');
+            glare.style.setProperty('--gy', (py * 100).toFixed(1) + '%');
+          }
+        });
+        card.addEventListener('mouseleave', function() {
+          card.style.transition = 'transform .7s cubic-bezier(.16,.84,.34,1)';
+          card.style.transform = '';
+        });
+      });
+    }
+
+    // ============================================================
+    // Magnetic CTAs — buttons lean toward the cursor
+    // ============================================================
+    if (FINE && !REDUCED) {
+      document.querySelectorAll('.magnetic').forEach(function(el) {
+        el.addEventListener('mousemove', function(e) {
+          var r = el.getBoundingClientRect();
+          var dx = e.clientX - (r.left + r.width / 2);
+          var dy = e.clientY - (r.top + r.height / 2);
+          el.style.transform = 'translate(' + (dx * 0.28).toFixed(1) + 'px, ' + (dy * 0.34).toFixed(1) + 'px)';
+        });
+        el.addEventListener('mouseleave', function() { el.style.transform = ''; });
+      });
+    }
+
+    // ============================================================
+    // Unified kinetic loop — marquees, page skew, mouse parallax
+    // ============================================================
+    var mTargets = (FINE && !REDUCED)
+      ? Array.prototype.slice.call(document.querySelectorAll('[data-mouse]')).map(function(el) {
+          return { el: el, s: parseFloat(el.getAttribute('data-mouse')) || 10, x: 0, y: 0 };
+        })
+      : [];
+
+    function rafLoop() {
+      if (!REDUCED) {
+        // marquees
+        for (var i = 0; i < marqTracks.length; i++) {
+          var t = marqTracks[i];
+          t.x += (t.sp + marqBoost) * t.dir;
+          if (t.w > 0) {
+            if (t.x <= -t.w) t.x += t.w;
+            else if (t.x > 0) t.x -= t.w;
+          }
+          t.el.style.transform = 'translate3d(' + t.x.toFixed(2) + 'px, 0, 0)';
+        }
+        marqBoost *= 0.93;
+
+        // scroll-velocity skew on the page body
+        if (mainEl) {
+          if (!lenis) {
+            var sy = window.scrollY || 0;
+            skewTarget = clamp((sy - lastScrollForSkew) * 0.05, -1.25, 1.25);
+            lastScrollForSkew = sy;
+          }
+          skewTarget *= 0.88;
+          skewCur += (skewTarget - skewCur) * 0.12;
+          if (Math.abs(skewCur) < 0.02 && Math.abs(skewTarget) < 0.02) {
+            if (mainEl.style.transform) mainEl.style.transform = '';
+          } else {
+            mainEl.style.transform = 'skewY(' + skewCur.toFixed(3) + 'deg)';
+          }
+        }
+      }
+
+      // mouse parallax drift
+      for (var m = 0; m < mTargets.length; m++) {
+        var mt = mTargets[m];
+        mt.x += (mouseNX * mt.s - mt.x) * 0.06;
+        mt.y += (mouseNY * mt.s * 0.7 - mt.y) * 0.06;
+        mt.el.style.transform = 'translate3d(' + mt.x.toFixed(2) + 'px, ' + mt.y.toFixed(2) + 'px, 0)';
+      }
+
       requestAnimationFrame(rafLoop);
     }
     rafLoop();
